@@ -48,5 +48,60 @@ git自带一个`git config`工具来帮助设置控制git外观和行为的配�
 
 `git help config` / `git config -h`
 
+## 远程仓库
 
+远程仓库指托管在互联网或其他网络中的项目的版本库。
+
+1. 查看远程仓库可以使用`git remote`命令，指定`-v`选项会显示需要读写远程仓库使用的git保存的简写及其对应的url。
+
+<img src="https://cdn.jsdelivr.net/gh/qc-sxt/note-image@main/img/202506152334537.png" alt="image-20250615233432497" style="zoom: 80%;" />
+
+2. 可以使用命令`git remote add <shortname> <url>`添加一个新的远程git仓库url，同时指定一个简写shortname。
+
+<img src="https://cdn.jsdelivr.net/gh/qc-sxt/note-image@main/img/202506152354502.png" alt="image-20250615235442436" style="zoom:80%;" />
+
+3. 从远程仓库中获得数据可执行`git fetch <remote>`，这个命令会访问远程仓库，从中拉取所有本地还没有的数据。执行完成后，将拥有那个远程仓库中所有分支的引用，可以随时合并或查看。
+
+4. 推送项目到上游可以执行命令`git push <remote> <branch>`
+5. 查看某个远程仓库的更多信息可以使用命令`git remote show <remote>`
+
+<img src="https://cdn.jsdelivr.net/gh/qc-sxt/note-image@main/img/202506160001809.png" alt="image-20250616000103760" style="zoom:67%;" />
+
+6. 使用命令`git remote rename <old_remote> <new_remote>`来修改一个远程仓库的简写名；使用命令`git remote remove <remote>`来删除一个远程仓库。
+
+## 打标签和git别名
+
+git可以给仓库历史中的某一个提交打上标签，以示重要，人们也尝尝会使用这个功能来标记发布节点（v1.0、v2.0等）。
+
+1. `git tag`命令可以列出所有已有的标签，如果想使用匹配标签名的通配模式，那么必须要使用`-l / --list`选项。
+
+2. git支持两种标签：轻量标签和附注标签。轻量标签很像一个不会改变的分支即它只是某个特定提交的引用；而附注标签是存储在git数据库中的一个完整对象，它们是可以被校验的，其中包含打标签者的名字、电子邮件地址、日期时间，此外还有一个标签信息。
+
+- 附注标签：在运行`tag`命令时指定`-a`选项即可。此外还需要`-m`选项指定一条将会存储在标签中的信息，如果没有为附注标签指定一条信息，git会启动编辑器要求输入信息。通过`git show`命令可以看到标签信息和与之对应的提交信息。
+- 轻量标签：本质上是将提交校验和存储到一个文件中，没有保存任何其他信息。创建轻量标签，不需要使用任何选项，直接提供标签名字即可。这时在标签上运行`git show`，将不会看到额外的标签信息，只会显示出提交信息。
+
+<img src="https://cdn.jsdelivr.net/gh/qc-sxt/note-image@main/img/202506222219789.png" alt="image-20250622221919703" style="zoom:67%;" />
+
+<img src="https://cdn.jsdelivr.net/gh/qc-sxt/note-image@main/img/202506222219054.png" alt="image-20250622221939000" style="zoom:67%;" />
+
+3. 也可以对过去的提交打标签，需要在命令的末尾指定提交的校验和（或部分校验和） ==**todo**== 
+
+4. 默认情况下，`git push`命令并不会传送标签到远程仓库服务器上。在创建完标签后必须显式地推送标签到共享服务器上，这个过程就像共享远程分支一样，运行命令`git push origin <tagname>` 。而如果想要一次性推送很多标签，也可以使用带有`--tags`选项的`git push`命令，这将会把所有不在远程仓库服务器上的标签全部传送到那里。并且这一命令不会区分轻量标签和附注标签，没有简单的选项可以实现只选择推送一种标签。
+
+<img src="https://cdn.jsdelivr.net/gh/qc-sxt/note-image@main/img/202506222228361.png" alt="image-20250622222830294" style="zoom:67%;" />
+
+5. 要删除掉本地仓库上的标签，可以使用命令`git tag -d <tagname>`，但这个命令并不会从远程仓库中移除这个标签。必须使用`git push <remote> :refs/tags/<tagname>`来更新远程仓库，这个操作的含义是将冒号前的控制推送到远程标签名，从而高效地删除它。也可以使用命令`git push origin --delete <tagname>`来更直观的删除远程标签。
+
+<img src="https://cdn.jsdelivr.net/gh/qc-sxt/note-image@main/img/202506222233098.png" alt="image-20250622223319045" style="zoom:67%;" />
+
+6. 可以通过`git config`文件来为每一个命令创建别名，使得git的操作体验更加的简单、熟悉。比如：
+
+```bash
+git config --global alias.co checkout  # 为checkout创建别名co
+git config --global alias.br branch 
+git config --global alias.ci commit
+git config --global alias.st status
+git config --global alias.unstage 'reset HEAD --' # 取消暂存别名
+git config --global alias.last 'log -1 HEAD' # 查看最后一次提交
+```
 
